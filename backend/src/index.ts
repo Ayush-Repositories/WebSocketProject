@@ -26,20 +26,20 @@ wss.on('connection', (socket: WebSocket) => {
             })
         }
         if(parsedMsg.type === 'chat') {
-            const currentUserRoom = sockets.find((sock) => {
-                sock.socket ==  socket
-            })?.room
+            let currentUserRoom = null;
+
+            for (let i = 0; i < sockets.length; i++) {
+                if (sockets[i].socket == socket) {
+                    currentUserRoom = sockets[i].room
+                }
+            }
 
             for(let i = 0; i<sockets.length; i++) {
                 if(sockets[i].room === currentUserRoom) {
-                    sockets[i].socket.send(parsedMsg.payload.message)
+                    sockets[i].socket.send(parsedMsg.payload.message.toString())
                 }
             }
         }
-        console.log(`Message: ${msg.toString()}`);
-        sockets.forEach( ({socket, room})=>{
-            socket.send(`${msg.toString()}, says the server`)
-        } )
     })
 
     socket.on('disconnect', ()=>{
