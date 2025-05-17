@@ -9,7 +9,6 @@ let sockets = [];
 wss.on('connection', (socket) => {
     // sockets.push(socket)
     userCount += 1;
-    console.log(`User #${userCount} Connected`);
     socket.on('message', (msg) => {
         const parsedMsg = JSON.parse(msg);
         if (parsedMsg.type === 'join') {
@@ -17,6 +16,7 @@ wss.on('connection', (socket) => {
                 socket,
                 room: parsedMsg.payload.roomId
             });
+            console.log(`User #${userCount} Connected`);
         }
         if (parsedMsg.type === 'chat') {
             let currentUserRoom = null;
@@ -25,11 +25,17 @@ wss.on('connection', (socket) => {
                     currentUserRoom = sockets[i].room;
                 }
             }
-            for (let i = 0; i < sockets.length; i++) {
-                if (sockets[i].room === currentUserRoom) {
-                    sockets[i].socket.send(parsedMsg.payload.message.toString());
+            sockets.forEach((user) => {
+                if (user.room === currentUserRoom) {
+                    user.socket.send(JSON.stringify({
+                        type: "chat",
+                        payload: {
+                            message: parsedMsg.payload.message,
+                        },
+                    }));
                 }
-            }
+            });
+            console.log(parsedMsg.payload.message.toString() + ' from ' + currentUserRoom);
         }
     });
     socket.on('disconnect', () => {
