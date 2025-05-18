@@ -14,6 +14,7 @@ function ChatRoom({isConnected, setIsConnected}: chatRoomProps) {
     const socket_link = import.meta.env.VITE_SOCKET_LINK;
     const isConnectedRef = useRef(false);
     const roomRef = useRef(null)
+    let aalu;
 
 
     useEffect(() => {
@@ -77,15 +78,18 @@ function ChatRoom({isConnected, setIsConnected}: chatRoomProps) {
                     <button className="bg-purple-600 text-white p-2 cursor-pointer" onClick={
                         () => {
                             //@ts-ignore
-                            setRoom(roomRef.current.value)
-                            wsRef.current?.send(JSON.stringify({
-                                type: 'join',
-                                payload: {
-                                    roomId: room
-                                }
-                            }))
+                            const roomId = roomRef.current?.value;
+                            if (roomId) {
+                                setRoom(roomId);
+                                wsRef.current?.send(JSON.stringify({
+                                    type: 'join',
+                                    payload: {
+                                        roomId: roomId // ✅ use local variable
+                                    }
+                                }));
+                            }
                         }
-                    }   >Go To Room</button>
+                    }>Go To Room</button>
                 </div>}
             </div>
             <div className='h-[85vh] overflow-y-auto'>
