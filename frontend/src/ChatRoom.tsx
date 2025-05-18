@@ -14,7 +14,6 @@ function ChatRoom({isConnected, setIsConnected}: chatRoomProps) {
     const socket_link = import.meta.env.VITE_SOCKET_LINK;
     const isConnectedRef = useRef(false);
     const roomRef = useRef(null)
-    let aalu;
 
 
     useEffect(() => {
